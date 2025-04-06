@@ -1,0 +1,30 @@
+name: Daily Google Books Crawler  # Workflow 名稱
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 00:00 執行（台灣時間 08:00）
+  workflow_dispatch:  # 允許手動觸發
+
+jobs:
+  crawl-books:
+    runs-on: ubuntu-latest  # 使用 Ubuntu 環境執行
+    steps:
+      - name: 📥 取得程式碼
+        uses: actions/checkout@v3  # 拉取 Repository 內容
+
+      - name: 🏗️ 設定 Python 環境
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'  # 指定 Python 版本
+
+      - name: 📦 安裝相依套件
+        run: pip install requests pandas
+
+      - name: 🕷️ 執行爬蟲程式
+        run: python api.py
+
+      - name: 💾 上傳 CSV 結果
+        uses: actions/upload-artifact@v3
+        with:
+          name: book-data
+          path: api.csv
